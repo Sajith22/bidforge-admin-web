@@ -1,9 +1,11 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { useAuth } from './context/AuthContext';
+import type { ReactNode } from 'react';
+import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom';
+import { useAuth } from './context/useAuth';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
+import AddProduct from './pages/AddProduct';
 
-function ProtectedRoute({ children }: { children: React.ReactNode }) {
+function ProtectedRoute({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth();
 
   if (loading) {
@@ -21,23 +23,35 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
+const router = createBrowserRouter([
+  {
+    path: '/login',
+    element: <Login />,
+  },
+  {
+    path: '/dashboard',
+    element: (
+      <ProtectedRoute>
+        <Dashboard />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/products/new',
+    element: (
+      <ProtectedRoute>
+        <AddProduct />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '*',
+    element: <Navigate to="/dashboard" replace />,
+  },
+]);
+
 function App() {
-  return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          }
-        />
-        <Route path="*" element={<Navigate to="/dashboard" replace />} />
-      </Routes>
-    </BrowserRouter>
-  );
+  return <RouterProvider router={router} />;
 }
 
 export default App;
