@@ -1,11 +1,14 @@
+// src/lib/api.ts
+// baseURL now comes from a Vite env var instead of being hardcoded, so
+// the same code can point at different API URLs per environment.
+
 import axios from 'axios';
 import { auth } from './firebase';
 
 export const api = axios.create({
-  baseURL: 'http://localhost:3000',
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3000',
 });
 
-// Runs before every single request — grabs a fresh token and attaches it
 api.interceptors.request.use(async (config) => {
   const user = auth.currentUser;
   if (user) {
