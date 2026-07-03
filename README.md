@@ -1,75 +1,157 @@
-# React + TypeScript + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+---
 
-Currently, two official plugins are available:
+## 2. `bidforge-admin-web` (React Admin Dashboard) README
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+```markdown
+# BidForge — Admin Dashboard (React)
 
-## React Compiler
+A dark‑themed admin dashboard for managing products, auctions, and notifications in the BidForge auction platform. Built with React, TypeScript, and Tailwind CSS.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## 🚀 Live Demo
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- **Admin Dashboard:** [https://bidforge-admin-web.vercel.app](https://bidforge-admin-web.vercel.app)
+- **Backend API:** [https://bidforge-admin-api-production.up.railway.app](https://bidforge-admin-api-production.up.railway.app)
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+---
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## 📸 Screenshots / Demo
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+| Dashboard | Add Product | Login |
+|-----------|-------------|-------|
+| ![Dashboard](screenshots/dashboard.png) | ![Add](screenshots/add-product.png) | ![Login](screenshots/login.png) |
 
+*Add your own screenshots/GIF inside `screenshots/`.*
+
+---
+
+## 📋 Table of Contents
+
+- [Architecture](#architecture)
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Project Structure](#project-structure)
+- [Setup](#setup)
+- [Deployment](#deployment)
+- [CI/CD](#cicd)
+- [Contributing](#contributing)
+- [License](#license)
+
+---
+
+## Architecture
+
+This dashboard talks only to the **NestJS backend** — never directly to Firestore. Every write request carries a Firebase ID token verified server‑side.
+
+
+React Admin Dashboard (this repo)
+│
+▼ HTTP (ID token)
+NestJS Backend
+│ firebase-admin SDK (trusted)
+▼
+Firebase Project
+
+
+---
+
+## Features
+
+- **Secure login** — Firebase Auth, gated by custom `admin` claim
+- **Product management** — create, edit, publish/unpublish, delete
+- **Real‑time stats** — live, upcoming, ended counts
+- **Dark theme** — matches BidForge’s signature navy/dark look
+- **Responsive design** — works on desktop and tablet
+- **Auto‑attached ID tokens** — Axios interceptor adds fresh tokens to every request
+
+---
+
+## Tech Stack
+
+- **React** with TypeScript
+- **Vite** for build tooling
+- **Tailwind CSS** for styling
+- **Axios** for HTTP requests
+- **Firebase Auth** (client SDK, for login only)
+- **Vercel** for hosting
+
+---
+
+## Project Structure
+src/
+├── main.tsx # Entry point
+├── App.tsx # Routes
+├── context/
+│ └── AuthContext.tsx # Auth state
+├── lib/
+│ ├── api.ts # Axios instance
+│ ├── firebase.ts # Firebase init
+│ └── types.ts # TypeScript interfaces
+├── pages/
+│ ├── Dashboard.tsx # Product grid, stats
+│ ├── Login.tsx # Admin login
+│ └── AddProduct.tsx # Create product form
+└── ...
+
+
+---
+
+## Setup
+
+### Prerequisites
+
+- Node.js >= 18
+- Firebase project (same as customer app)
+- Backend API running (local or Railway)
+
+### 1. Clone & install
+
+```bash
+git clone https://github.com/Sajith22/bidforge-admin-web.git
+cd bidforge-admin-web
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### 2. Configure Firebase
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Edit src/lib/firebase.ts with your Firebase web config (never commit real keys).
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### 3. Set API URL
 
+Create a .env file:
+
+``bash
+VITE_API_URL=http://localhost:3000
 ```
+
+### 4. Run locally
+```bash
+npm run dev
+```
+Open http://localhost:5173.
+
+### Deployment 
+
+Deployed on Vercel with the VITE_API_URL environment variable set to the production backend URL.
+Vercel auto‑deploys on every push to main.
+
+### CI/CD
+Vercel connects to the GitHub repo and automatically builds and deploys on every push. No extra configuration required.
+
+### Contributing
+Use Tailwind CSS for styling.
+
+Keep components small and reusable.
+
+Use meaningful commit messages.
+
+### License
+
+MIT
+
+### Contact
+GitHub: @Sajith22
+
+Built with React & NestJS — part of the BidForge project family.
